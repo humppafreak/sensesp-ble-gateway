@@ -56,6 +56,27 @@ gateway->start();
 
 See the [examples/](examples/) directory for complete working firmware.
 
+## Flashing a Release
+
+Every [published release](../../releases) has a merged, single-file firmware
+binary attached for each example (`sensesp-ble-gateway-<example>-merged.bin`),
+built by [`.github/workflows/release-firmware.yml`](.github/workflows/release-firmware.yml).
+These already contain the bootloader, partition table, and app image at their
+correct addresses — flash the whole file starting at **offset `0x0`**, not at
+the offset you'd use for a bare `bootloader.bin` or `firmware.bin`:
+
+```
+esptool.py --chip <chip> erase_flash
+esptool.py --chip <chip> write_flash 0x0 sensesp-ble-gateway-<example>-merged.bin
+```
+
+Use the matching `--chip` for the example you're flashing: `esp32p4` for
+`p4_ble_gateway`, `esp32c5` for `c5_ble_gateway`, `esp32` for
+`esp32_ble_gateway`. Flashing at the wrong offset (e.g. `0x1000`, where a
+bare bootloader normally goes) shifts every section one page later than the
+ROM bootloader expects and shows up as `flash read err, 1000` on the serial
+console at boot.
+
 ## Requirements
 
 - SensESP >= 3.3.0 (needs `SKWSClient::get_auth_token()`, hostname persistence fix, and stale polling href fix — all merged into main, pending next release; until then use `https://github.com/SignalK/SensESP.git#main` in `lib_deps`)
