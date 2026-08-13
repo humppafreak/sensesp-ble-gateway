@@ -1,0 +1,25 @@
+# ESP32-WROOM-32 BLE gateway — native Bluedroid BLE with WiFi.
+
+# Arduino-as-IDF-component
+CONFIG_AUTOSTART_ARDUINO=y
+
+# FreeRTOS / main task — match SensESP's top-level [espidf] defaults.
+CONFIG_FREERTOS_HZ=1000
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
+
+# Bluetooth — native Bluedroid controller, BLE only.
+CONFIG_BT_ENABLED=y
+CONFIG_BT_BLUEDROID_ENABLED=y
+CONFIG_BT_BLE_ENABLED=y
+CONFIG_BT_GATTC_ENABLE=y
+CONFIG_BT_GATTS_ENABLE=n
+CONFIG_BT_CLASSIC_ENABLED=n
+CONFIG_BLE_MESH=n
+
+# WiFi/BLE coexistence — both radios active at once on the classic ESP32.
+CONFIG_SW_COEXIST_ENABLE=y
+
+# Misc — match SensESP's top-level [espidf] env.
+CONFIG_MBEDTLS_PSK_MODES=y
+CONFIG_MBEDTLS_KEY_EXCHANGE_PSK=y
+CONFIG_HTTPD_MAX_REQ_HDR_LEN=1024
