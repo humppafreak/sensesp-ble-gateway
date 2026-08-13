@@ -19,6 +19,9 @@ CONFIG_BLE_MESH=n
 # WiFi/BLE coexistence — both radios active at once on the classic ESP32.
 CONFIG_SW_COEXIST_ENABLE=y
 
+# Disable ESP Insights
+CONFIG_ESP_INSIGHTS_ENABLED=n
+
 # Misc — match SensESP's top-level [espidf] env.
 CONFIG_MBEDTLS_PSK_MODES=y
 CONFIG_MBEDTLS_KEY_EXCHANGE_PSK=y
