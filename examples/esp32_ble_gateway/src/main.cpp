@@ -25,10 +25,12 @@ void setup() {
   // config, whether that's because none was ever provisioned or
   // because the configured network can't be reached; real credentials
   // get set through its captive config UI instead.
+  // No enable_ota() — the partition table is a single non-OTA
+  // "factory" app slot (sized for 2MB flash modules), so there's no
+  // second slot for OTA to update into. Reflash over serial instead.
   SensESPAppBuilder builder;
   auto app = builder.set_hostname(GATEWAY_HOSTNAME)
                  ->set_wifi_access_point(GATEWAY_HOSTNAME, "")
-                 ->enable_ota("esp32-ble-gw-ota")
                  ->get_app();
 
   g_ble = std::make_shared<NativeBLE>();

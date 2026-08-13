@@ -1,0 +1,6 @@
+# Partition table for a 2MB ESP32-WROOM-32 module.
+# Single (non-OTA) app slot — the merged firmware is already ~1.7MB,
+# so a 2MB chip has no room for two OTA-sized slots plus that image.
+# Name,    Type, SubType, Offset,   Size,    Flags
+nvs,       data, nvs,     0x9000,   0x5000,
+factory,   app,  factory, 0x10000,  0x1F0000,
