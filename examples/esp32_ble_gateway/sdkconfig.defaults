@@ -26,3 +26,17 @@ CONFIG_ESP_INSIGHTS_ENABLED=n
 CONFIG_MBEDTLS_PSK_MODES=y
 CONFIG_MBEDTLS_KEY_EXCHANGE_PSK=y
 CONFIG_HTTPD_MAX_REQ_HDR_LEN=1024
+
+# ---------------------------------------------------------------------
+# IRAM headroom. The classic ESP32 has far less IRAM than the P4/C5,
+# and the Arduino-ESP32 framework pulls the Insights/RainMaker/
+# diagnostics managed components into the build regardless of the
+# idf_component.yml exclusions above (same as the C5 example — the
+# exclusions there don't stop compilation, only unblock certs). That
+# overflows iram0_0_seg by default. Optimizing for size and moving
+# WiFi's speed-optimized paths out of IRAM (a documented ESP-IDF
+# trade-off: less WiFi throughput, more free IRAM) clears it.
+# ---------------------------------------------------------------------
+CONFIG_COMPILER_OPTIMIZATION_SIZE=y
+CONFIG_ESP_WIFI_IRAM_OPT=n
+CONFIG_ESP_WIFI_RX_IRAM_OPT=n
