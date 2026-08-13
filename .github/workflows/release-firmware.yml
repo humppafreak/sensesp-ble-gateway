@@ -1,0 +1,64 @@
+name: Release merged firmware
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - example: p4_ble_gateway
+            chip: esp32p4
+          - example: c5_ble_gateway
+            chip: esp32c5
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Cache PlatformIO + pip
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.platformio
+            ~/.cache/pip
+          key: ${{ runner.os }}-pio-${{ matrix.example }}-${{ hashFiles(format('examples/{0}/platformio.ini', matrix.example)) }}
+          restore-keys: |
+            ${{ runner.os }}-pio-${{ matrix.example }}-
+            ${{ runner.os }}-pio-
+
+      - name: Install PlatformIO + esptool
+        run: pip install --upgrade platformio esptool
+
+      - name: Build ${{ matrix.example }}
+        run: pio run -d examples/${{ matrix.example }}
+
+      - name: Merge flash images into one binary
+        run: |
+          python scripts/merge_firmware.py \
+            --build-dir examples/${{ matrix.example }}/.pio/build/${{ matrix.example }} \
+            --chip ${{ matrix.chip }} \
+            --out sensesp-ble-gateway-${{ matrix.example }}-merged.bin
+
+      - name: Upload merged binary to the release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: sensesp-ble-gateway-${{ matrix.example }}-merged.bin
+
+      - name: Upload build artifact
+        if: github.event_name != 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: merged-firmware-${{ matrix.example }}
+          path: sensesp-ble-gateway-${{ matrix.example }}-merged.bin
