@@ -19,9 +19,15 @@ static std::shared_ptr<BLESignalKGateway> g_gateway;
 void setup() {
   SetupLogging(ESP_LOG_INFO);
 
+  // No set_wifi_client() call — WiFi client credentials aren't baked
+  // into firmware here. SensESP brings up this open (no-password)
+  // access point on its own whenever it has no working WiFi client
+  // config, whether that's because none was ever provisioned or
+  // because the configured network can't be reached; real credentials
+  // get set through its captive config UI instead.
   SensESPAppBuilder builder;
   auto app = builder.set_hostname(GATEWAY_HOSTNAME)
-                 ->set_wifi_client("YOUR_WIFI_SSID", "YOUR_WIFI_PASSWORD")
+                 ->set_wifi_access_point(GATEWAY_HOSTNAME, "")
                  ->enable_ota("esp32-ble-gw-ota")
                  ->get_app();
 
