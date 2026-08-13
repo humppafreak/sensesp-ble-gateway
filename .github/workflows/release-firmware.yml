@@ -19,6 +19,8 @@ jobs:
             chip: esp32p4
           - example: c5_ble_gateway
             chip: esp32c5
+          - example: esp32_ble_gateway
+            chip: esp32
     steps:
       - uses: actions/checkout@v7
 

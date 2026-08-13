@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        example: [p4_ble_gateway, c5_ble_gateway]
+        example: [p4_ble_gateway, c5_ble_gateway, esp32_ble_gateway]
     steps:
       - uses: actions/checkout@v7
 

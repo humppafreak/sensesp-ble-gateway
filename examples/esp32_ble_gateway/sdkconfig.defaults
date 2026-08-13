@@ -1,0 +1,42 @@
+# ESP32-WROOM-32 BLE gateway — native Bluedroid BLE with WiFi.
+
+# Arduino-as-IDF-component
+CONFIG_AUTOSTART_ARDUINO=y
+
+# FreeRTOS / main task — match SensESP's top-level [espidf] defaults.
+CONFIG_FREERTOS_HZ=1000
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
+
+# Bluetooth — native Bluedroid controller, BLE only.
+CONFIG_BT_ENABLED=y
+CONFIG_BT_BLUEDROID_ENABLED=y
+CONFIG_BT_BLE_ENABLED=y
+CONFIG_BT_GATTC_ENABLE=y
+CONFIG_BT_GATTS_ENABLE=n
+CONFIG_BT_CLASSIC_ENABLED=n
+CONFIG_BLE_MESH=n
+
+# WiFi/BLE coexistence — both radios active at once on the classic ESP32.
+CONFIG_SW_COEXIST_ENABLE=y
+
+# Disable ESP Insights
+CONFIG_ESP_INSIGHTS_ENABLED=n
+
+# Misc — match SensESP's top-level [espidf] env.
+CONFIG_MBEDTLS_PSK_MODES=y
+CONFIG_MBEDTLS_KEY_EXCHANGE_PSK=y
+CONFIG_HTTPD_MAX_REQ_HDR_LEN=1024
+
+# ---------------------------------------------------------------------
+# IRAM headroom. The classic ESP32 has far less IRAM than the P4/C5,
+# and the Arduino-ESP32 framework pulls the Insights/RainMaker/
+# diagnostics managed components into the build regardless of the
+# idf_component.yml exclusions above (same as the C5 example — the
+# exclusions there don't stop compilation, only unblock certs). That
+# overflows iram0_0_seg by default. Optimizing for size and moving
+# WiFi's speed-optimized paths out of IRAM (a documented ESP-IDF
+# trade-off: less WiFi throughput, more free IRAM) clears it.
+# ---------------------------------------------------------------------
+CONFIG_COMPILER_OPTIMIZATION_SIZE=y
+CONFIG_ESP_WIFI_IRAM_OPT=n
+CONFIG_ESP_WIFI_RX_IRAM_OPT=n
